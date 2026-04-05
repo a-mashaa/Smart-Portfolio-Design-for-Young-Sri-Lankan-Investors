@@ -1279,7 +1279,7 @@ with tab3:
     layout_ef = _base_layout(
         height=460, margin=dict(t=50, b=70, l=10, r=100),
         title=dict(
-            text='Efficient Frontier — 1,000 Random Portfolios + Optimised Strategies',
+            text='Efficient Frontier',
             font=dict(size=14, color=_FONT_COL, family=_FONT_FAM), x=0.01,
         ),
         xaxis=dict(title='Portfolio Volatility (%)', gridcolor=_GRID),
