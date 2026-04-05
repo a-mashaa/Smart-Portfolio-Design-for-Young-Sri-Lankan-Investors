@@ -960,36 +960,82 @@ with tab2:
     with col_l:
         # Scatter plot: Price vs Volatility
         fig_sc = go.Figure()
+        # Qualified zone shading
+        fig_sc.add_vrect(
+            x0=bounds['yi_lower']*100, x1=bounds['adj_upper']*100,
+            fillcolor='rgba(108,61,232,0.06)', line_width=0,
+        )
+        fig_sc.add_vrect(
+            x0=bounds['yi_lower']*100, x1=bounds['adj_upper']*100,
+            fillcolor='rgba(0,0,0,0)', line_width=0,
+        )
+        # Plot each stock
         for _, row in screened.iterrows():
-            color = '#2ecc71' if row['Qualified'] else ('#f39c12' if row['Risk Pass'] else '#e74c3c')
-            symbol = 'circle' if row['Qualified'] else 'x'
+            if row['Qualified']:
+                mk_color = _PURPLE
+                mk_symbol = 'circle'
+                mk_size = 16
+                mk_line = dict(color='white', width=2)
+            elif row['Risk Pass']:
+                mk_color = _AMBER
+                mk_symbol = 'diamond'
+                mk_size = 13
+                mk_line = dict(color='white', width=1.5)
+            else:
+                mk_color = _RED
+                mk_symbol = 'x'
+                mk_size = 11
+                mk_line = dict(color='white', width=1.5)
             fig_sc.add_trace(go.Scatter(
                 x=[row['Volatility (%)']],
                 y=[row['Price (LKR)']],
                 mode='markers+text',
-                marker=dict(size=14, color=color, symbol=symbol, line=dict(color='white', width=1)),
+                marker=dict(size=mk_size, color=mk_color, symbol=mk_symbol,
+                            line=mk_line, opacity=0.9),
                 text=[row['Stock']],
                 textposition='top center',
-                textfont=dict(size=9, color='#2a3a50'),
+                textfont=dict(size=9, color=_FONT_COL, family=_FONT_FAM),
                 name=row['Stock'],
                 showlegend=False,
-                hovertemplate=f"<b>{row['Stock']}</b><br>Vol: {row['Volatility (%)']:.2f}%<br>Price: Rs.{row['Price (LKR)']:,.2f}<br>Status: {'✅ Qualified' if row['Qualified'] else '❌ Excluded'}<extra></extra>",
+                hovertemplate=(
+                    f"<b>{row['Stock']}</b><br>"
+                    f"Volatility: {row['Volatility (%)']:.2f}%<br>"
+                    f"Price: Rs.{row['Price (LKR)']:,.2f}<br>"
+                    f"Status: {'✅ Qualified' if row['Qualified'] else ('⚠️ Risk OK, Price High' if row['Risk Pass'] else '❌ Excluded')}"
+                    "<extra></extra>"
+                ),
             ))
-        fig_sc.add_vrect(x0=bounds['yi_lower']*100, x1=bounds['adj_upper']*100,
-                         fillcolor='rgba(46,204,113,0.07)', line_width=0)
-        fig_sc.add_vline(x=bounds['yi_lower']*100, line_dash='dash', line_color='#2ecc71', line_width=1)
-        fig_sc.add_vline(x=bounds['adj_upper']*100, line_dash='dash', line_color='#e74c3c', line_width=1)
-        fig_sc.add_hline(y=compute_max_affordable_price(capital), line_dash='dash',
-                         line_color='#6c3de8', line_width=1,
-                         annotation_text=f"Max Price: Rs.{compute_max_affordable_price(capital):,.0f}")
-        fig_sc.update_layout(
-            paper_bgcolor='rgba(240,244,255,0)', plot_bgcolor='#ffffff',
-            font=dict(color='#18172b'), height=420,
-            xaxis_title='Annual Volatility (%)', yaxis_title='Price (LKR)',
-            title='Stock Universe: Risk vs Price',
-            yaxis=dict(gridcolor='#e4d9ff'), xaxis=dict(gridcolor='#e4d9ff'),
-            margin=dict(t=50, b=60),
+        # Boundary lines
+        fig_sc.add_vline(x=bounds['yi_lower']*100, line_dash='dash',
+                         line_color=_GREEN, line_width=2,
+                         annotation_text=f"Min Vol: {bounds['yi_lower']*100:.1f}%",
+                         annotation_font=dict(color=_GREEN, size=10))
+        fig_sc.add_vline(x=bounds['adj_upper']*100, line_dash='dash',
+                         line_color=_RED, line_width=2,
+                         annotation_text=f"Max Vol: {bounds['adj_upper']*100:.1f}%",
+                         annotation_font=dict(color=_RED, size=10))
+        fig_sc.add_hline(
+            y=compute_max_affordable_price(capital), line_dash='dash',
+            line_color=_PURPLE, line_width=2,
+            annotation_text=f"Max Price: Rs.{compute_max_affordable_price(capital):,.0f}",
+            annotation_font=dict(color=_PURPLE, size=10),
         )
+        # Legend annotation boxes
+        fig_sc.add_annotation(x=0.01, y=0.99, xref='paper', yref='paper',
+            text="🟣 Qualified  🔶 Risk OK  🔴 Excluded",
+            showarrow=False, bgcolor='rgba(255,255,255,0.9)',
+            bordercolor=_GRID, borderwidth=1,
+            font=dict(size=10, color=_FONT_COL, family=_FONT_FAM),
+            align='left',
+        )
+        layout_sc = _base_layout(
+            height=440, margin=dict(t=55, b=65, l=10, r=10),
+            title=dict(text='Stock Universe: Volatility vs Price — Dual Screening',
+                       font=dict(size=14, color=_FONT_COL, family=_FONT_FAM), x=0.01),
+            xaxis=dict(title='Annual Volatility (%)', gridcolor=_GRID),
+            yaxis=dict(title='Latest Price (LKR)', gridcolor=_GRID),
+        )
+        fig_sc.update_layout(**layout_sc)
         st.plotly_chart(fig_sc, use_container_width=True)
 
     with col_r:
@@ -997,19 +1043,39 @@ with tab2:
         afford_counts = screened['Affordability'].value_counts()
         colors_a = {'Highly Affordable': '#2ecc71', 'Affordable': '#27ae60',
                     'Moderately Affordable': '#f39c12', 'Not Affordable': '#e74c3c'}
+        colors_a_youth = {
+            'Highly Affordable': _PURPLE,
+            'Affordable': _TEAL,
+            'Moderately Affordable': _AMBER,
+            'Not Affordable': _RED,
+        }
         fig_pie = go.Figure(go.Pie(
             labels=afford_counts.index,
             values=afford_counts.values,
-            marker_colors=[colors_a.get(l, '#888') for l in afford_counts.index],
-            hole=0.4,
+            marker=dict(
+                colors=[colors_a_youth.get(l, '#888') for l in afford_counts.index],
+                line=dict(color='white', width=3),
+            ),
+            hole=0.52,
             textinfo='label+percent',
-            textfont=dict(color='#18172b', size=11),
+            textfont=dict(color='white', size=11, family=_FONT_FAM),
+            hovertemplate='<b>%{label}</b><br>Count: %{value}<br>%{percent}<extra></extra>',
+            pull=[0.04 if l == 'Highly Affordable' else 0 for l in afford_counts.index],
         ))
-        fig_pie.update_layout(
-            paper_bgcolor='rgba(240,244,255,0)', font=dict(color='#18172b'),
-            height=280, margin=dict(t=10, b=10),
-            showlegend=False,
+        fig_pie.add_annotation(
+            text=f"<b>{int(afford_counts.sum())}</b><br><span style='font-size:10px'>Stocks</span>",
+            x=0.5, y=0.5, showarrow=False,
+            font=dict(size=18, color=_FONT_COL, family=_FONT_FAM),
         )
+        layout_pie = _base_layout(height=300, margin=dict(t=20, b=10, l=0, r=0),
+                                   showlegend=True)
+        layout_pie['legend'] = dict(
+            orientation='v', x=1.0, y=0.5,
+            font=dict(size=10, family=_FONT_FAM),
+            bgcolor='rgba(255,255,255,0.9)',
+            bordercolor=_GRID, borderwidth=1,
+        )
+        fig_pie.update_layout(**layout_pie)
         st.plotly_chart(fig_pie, use_container_width=True)
 
         st.markdown("**Qualified Stocks**")
@@ -1025,6 +1091,7 @@ with tab2:
     display_df['Risk Pass'] = display_df['Risk Pass'].map({True: '✅', False: '❌'})
     display_df['Qualified'] = display_df['Qualified'].map({True: '✅ Qualified', False: '❌ Excluded'})
     st.dataframe(display_df, use_container_width=True, hide_index=True)
+
 
 # ═════════════════════════════════════════════════════════════════════════════
 # TAB 3: PORTFOLIOS
