@@ -1,7 +1,7 @@
 """
 Smart Portfolio Design for Young Sri Lankan Investors
 CSE (Colombo Stock Exchange) — Portfolio Advisor App
-Research by: [Your Name]
+Research by: M.K.A. Loshani
 """
 
 import streamlit as st
@@ -27,164 +27,304 @@ st.set_page_config(
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CUSTOM CSS
+# CUSTOM CSS  —  Youth-Friendly UI
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&display=swap');
 
+/* ── BASE ─────────────────────────────────────────── */
 html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
-
-/* Background */
 .stApp {
-    background: #f5f7fa;
-    color: #1a2332;
+    background: linear-gradient(135deg, #f0f4ff 0%, #f9f4ff 40%, #fff4fb 100%);
+    color: #18172b;
 }
 
-/* Sidebar */
+/* ── SIDEBAR ──────────────────────────────────────── */
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #ffffff 0%, #f0f4f8 100%);
-    border-right: 1px solid #dde3ec;
+    background: linear-gradient(180deg, #ffffff 0%, #f4f0ff 100%);
+    border-right: 1px solid #e4d9ff;
 }
-[data-testid="stSidebar"] * { color: #1a2332 !important; }
+[data-testid="stSidebar"] * { color: #18172b !important; }
 [data-testid="stSidebar"] .stSlider label,
 [data-testid="stSidebar"] .stSelectbox label,
-[data-testid="stSidebar"] .stFileUploader label { color: #4a5568 !important; }
+[data-testid="stSidebar"] .stFileUploader label {
+    color: #6c5eb5 !important;
+    font-weight: 600 !important;
+    font-size: 0.82rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
 
-/* Main header */
+/* ── HEADER ───────────────────────────────────────── */
 .main-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.6rem;
-    color: #1a3a5c;
-    line-height: 1.15;
-    letter-spacing: -0.5px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.7rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #6c3de8 0%, #c4338a 60%, #f5a623 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    letter-spacing: -1px;
 }
 .main-subtitle {
-    font-size: 1rem;
-    color: #5a7a99;
-    font-weight: 300;
-    letter-spacing: 0.5px;
+    font-size: 0.92rem;
+    color: #8878c0;
+    font-weight: 400;
+    letter-spacing: 0.2px;
 }
 
-/* Section headings */
+/* ── SECTION TITLES ───────────────────────────────── */
 .section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    color: #1a3a5c;
-    border-bottom: 2px solid #c8d8e8;
-    padding-bottom: 6px;
-    margin-bottom: 16px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #18172b;
+    padding-bottom: 10px;
+    margin-bottom: 18px;
+    border-bottom: 3px solid transparent;
+    border-image: linear-gradient(90deg, #6c3de8, #c4338a, #f5a623) 1;
 }
 
-/* Metric cards */
+/* ── METRIC CARDS ─────────────────────────────────── */
 .metric-card {
     background: #ffffff;
-    border: 1px solid #dde3ec;
-    border-radius: 12px;
-    padding: 18px 20px;
+    border: 1px solid #e8dfff;
+    border-radius: 18px;
+    padding: 20px 22px;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(26,58,92,0.07);
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(108,61,232,0.08);
+    transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s;
+    position: relative;
+    overflow: hidden;
+}
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #6c3de8, #c4338a, #f5a623);
+    border-radius: 18px 18px 0 0;
 }
 .metric-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(26,58,92,0.12);
+    transform: translateY(-5px);
+    box-shadow: 0 14px 36px rgba(108,61,232,0.15);
 }
 .metric-label {
-    font-size: 0.72rem;
-    color: #5a7a99;
+    font-size: 0.68rem;
+    color: #9b8cc4;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 4px;
+    letter-spacing: 1.3px;
+    font-weight: 700;
+    margin-bottom: 6px;
 }
 .metric-value {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.9rem;
-    color: #1a3a5c;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #18172b;
     line-height: 1;
 }
-.metric-unit { font-size: 0.85rem; color: #5a7a99; }
+.metric-unit { font-size: 0.85rem; color: #9b8cc4; font-weight: 400; }
 
-/* Profile badge */
+/* ── PROFILE ELEMENTS ─────────────────────────────── */
 .profile-badge {
-    background: #ffffff;
-    border: 2px solid #1a3a5c;
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 8px rgba(26,58,92,0.08);
+    background: linear-gradient(135deg, #f4f0ff, #fff0fb);
+    border: 2px solid #c4b5fd;
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 16px rgba(108,61,232,0.09);
 }
 .profile-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
-    color: #1a3a5c;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #6c3de8;
 }
-.profile-detail { color: #5a7a99; font-size: 0.88rem; }
+.profile-detail { color: #8878c0; font-size: 0.88rem; }
 
-/* Stock table */
-.stock-row-pass { background: rgba(39,174,96,0.08); }
-.stock-row-fail { background: rgba(231,76,60,0.06); }
+/* ── STOCK TABLE ──────────────────────────────────── */
+.stock-row-pass { background: rgba(16,185,129,0.06); }
+.stock-row-fail { background: rgba(239,68,68,0.04); }
 
-/* Risk zones */
+/* ── RISK ZONE CARDS ──────────────────────────────── */
 .zone-conservative {
-    background: linear-gradient(90deg, #eafaf1, #f0f7ff);
-    border-left: 4px solid #27ae60;
-    padding: 12px 18px; border-radius: 8px; margin: 6px 0;
-    box-shadow: 0 1px 4px rgba(39,174,96,0.1);
+    background: linear-gradient(120deg, #ecfdf5, #f0fdf4);
+    border-left: 4px solid #10b981;
+    border-radius: 12px;
+    padding: 14px 18px; margin: 8px 0;
+    box-shadow: 0 2px 10px rgba(16,185,129,0.1);
+    transition: transform 0.2s ease;
 }
-.zone-moderate {
-    background: linear-gradient(90deg, #fef9ec, #f0f7ff);
-    border-left: 4px solid #f39c12;
-    padding: 12px 18px; border-radius: 8px; margin: 6px 0;
-    box-shadow: 0 1px 4px rgba(243,156,18,0.1);
-}
-.zone-aggressive {
-    background: linear-gradient(90deg, #fdf0ee, #f0f7ff);
-    border-left: 4px solid #e74c3c;
-    padding: 12px 18px; border-radius: 8px; margin: 6px 0;
-    box-shadow: 0 1px 4px rgba(231,76,60,0.1);
-}
+.zone-conservative:hover { transform: translateX(5px); }
 
-/* Tabs */
+.zone-moderate {
+    background: linear-gradient(120deg, #fffbeb, #fef3c7);
+    border-left: 4px solid #f59e0b;
+    border-radius: 12px;
+    padding: 14px 18px; margin: 8px 0;
+    box-shadow: 0 2px 10px rgba(245,158,11,0.1);
+    transition: transform 0.2s ease;
+}
+.zone-moderate:hover { transform: translateX(5px); }
+
+.zone-aggressive {
+    background: linear-gradient(120deg, #fff1f2, #ffe4e6);
+    border-left: 4px solid #f43f5e;
+    border-radius: 12px;
+    padding: 14px 18px; margin: 8px 0;
+    box-shadow: 0 2px 10px rgba(244,63,94,0.1);
+    transition: transform 0.2s ease;
+}
+.zone-aggressive:hover { transform: translateX(5px); }
+
+/* ── TABS ─────────────────────────────────────────── */
 [data-baseweb="tab-list"] {
     background: transparent;
-    border-bottom: 2px solid #dde3ec;
+    border-bottom: 2px solid #e4d9ff;
+    gap: 2px;
 }
 [data-baseweb="tab"] {
-    color: #5a7a99 !important;
-    font-weight: 500;
+    color: #9b8cc4 !important;
+    font-weight: 600;
+    font-size: 0.88rem;
+    border-radius: 10px 10px 0 0;
+    padding: 8px 18px !important;
+    transition: all 0.2s;
+}
+[data-baseweb="tab"]:hover {
+    background: #f0ebff !important;
+    color: #6c3de8 !important;
 }
 [aria-selected="true"] {
-    color: #1a3a5c !important;
-    border-bottom-color: #1a3a5c !important;
+    color: #6c3de8 !important;
+    border-bottom-color: #6c3de8 !important;
+    background: #f0ebff !important;
 }
 
-/* Divider */
-hr { border-color: #dde3ec; }
+/* ── DIVIDER ──────────────────────────────────────── */
+hr { border-color: #e4d9ff; }
 
-/* Streamlit widgets */
+/* ── STREAMLIT NATIVE METRICS ─────────────────────── */
 [data-testid="stMetricValue"] {
-    color: #1a3a5c;
-    font-family: 'Playfair Display', serif;
+    color: #6c3de8 !important;
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-weight: 800 !important;
+}
+[data-testid="stMetricLabel"] {
+    color: #9b8cc4 !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 1px !important;
 }
 
-/* DataFrames */
-[data-testid="stDataFrame"] { border-radius: 8px; overflow: hidden; }
+/* ── DATAFRAMES ───────────────────────────────────── */
+[data-testid="stDataFrame"] {
+    border-radius: 14px !important;
+    overflow: hidden;
+    border: 1px solid #e4d9ff !important;
+    box-shadow: 0 2px 14px rgba(108,61,232,0.06);
+}
 
-/* Buttons */
+/* ── BUTTONS ──────────────────────────────────────── */
 .stButton > button {
-    background: #1a3a5c;
+    background: linear-gradient(135deg, #6c3de8, #c4338a);
     color: white;
     border: none;
-    border-radius: 8px;
-    font-family: 'Inter', sans-serif;
+    border-radius: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    padding: 8px 22px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(108,61,232,0.25);
 }
-.stButton > button:hover { background: #2a5080; }
+.stButton > button:hover {
+    opacity: 0.88;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(108,61,232,0.35);
+}
 
-/* Info/warning boxes */
-.stAlert { border-radius: 8px; }
+/* ── ALERTS ───────────────────────────────────────── */
+.stAlert { border-radius: 14px; }
+
+/* ── SELECTBOX / INPUT ────────────────────────────── */
+[data-baseweb="select"] > div {
+    border-color: #c4b5fd !important;
+    border-radius: 10px !important;
+}
+[data-baseweb="select"] > div:focus-within {
+    border-color: #6c3de8 !important;
+    box-shadow: 0 0 0 3px rgba(108,61,232,0.12) !important;
+}
+
+/* ── SCROLLBAR ────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f4f0ff; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #6c3de8; }
+
+/* ── CAPITAL CARD IN SIDEBAR ──────────────────────── */
+.capital-card {
+    background: linear-gradient(135deg, #6c3de8, #c4338a);
+    border-radius: 16px;
+    padding: 16px 18px;
+    text-align: center;
+    margin-top: 10px;
+    box-shadow: 0 6px 20px rgba(108,61,232,0.28);
+}
+.capital-label {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.8);
+    text-transform: uppercase;
+    letter-spacing: 1.3px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+.capital-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+/* ── RECOMMENDED BADGE ────────────────────────────── */
+.rec-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6c3de8, #c4338a);
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-top: 10px;
+    box-shadow: 0 3px 10px rgba(108,61,232,0.3);
+}
+
+/* ── PROJECTION MINI CARDS ────────────────────────── */
+.proj-row {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 10px;
+    text-align: left;
+    font-size: 0.85rem;
+}
+.proj-item {
+    border-radius: 10px;
+    padding: 7px 12px;
+    font-weight: 500;
+}
+.proj-expected { background: #f0ebff; color: #6c3de8; }
+.proj-best     { background: #ecfdf5; color: #059669; }
+.proj-worst    { background: #fff1f2; color: #e11d48; }
+.proj-prob     { background: #f0fdf4; color: #16a34a; font-weight: 700; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -435,17 +575,19 @@ def monte_carlo(portfolio, returns_df, n_sim=500, n_years=5):
 
 with st.sidebar:
     st.markdown("""
-    <div style="text-align:center; padding: 10px 0 20px;">
-        <div style="font-family:'Playfair Display',serif; font-size:1.1rem; color:#1a3a5c;">
-            📊 CSE Portfolio Advisor
-        </div>
-        <div style="font-size:0.72rem; color:#5a7a99; letter-spacing:1px; text-transform:uppercase;">
-            Smart Design for Young Investors
+    <div style="padding:6px 0 18px;">
+        <div style="background:linear-gradient(135deg,#6c3de8,#c4338a); border-radius:16px; padding:16px 12px; text-align:center; box-shadow:0 6px 20px rgba(108,61,232,0.3);">
+            <div style="font-family:'Space Grotesk',sans-serif; font-size:1.25rem; font-weight:800; color:#fff; letter-spacing:-0.5px;">
+                📊 CSE Portfolio Advisor
+            </div>
+            <div style="font-size:0.62rem; color:rgba(255,255,255,0.75); letter-spacing:1.6px; text-transform:uppercase; margin-top:4px; font-weight:600;">
+                Smart · Young · Sri Lankan
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("### 👤 Your Investor Profile")
+    st.markdown('<p style="font-family:Space Grotesk,sans-serif;font-weight:700;font-size:0.78rem;color:#6c3de8;text-transform:uppercase;letter-spacing:1.2px;margin:0 0 6px;">👤 Your Investor Profile</p>', unsafe_allow_html=True)
 
     age = st.slider("Your Age", 18, 40, 25, help="Your current age affects risk tolerance")
     monthly_income = st.selectbox(
@@ -459,21 +601,21 @@ with st.sidebar:
 
     capital = monthly_income * (investment_pct/100) * months_saved
     st.markdown(f"""
-    <div class="metric-card" style="margin-top:10px;">
-        <div class="metric-label">Your Investment Capital</div>
-        <div style="font-family:'Playfair Display',serif; font-size:1.4rem; color:#1a3a5c;">Rs. {capital:,.0f}</div>
+    <div class="capital-card">
+        <div class="capital-label">💰 Your Investment Capital</div>
+        <div class="capital-value">Rs. {capital:,.0f}</div>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown("---")
-    st.markdown("### 📂 Data Source")
+    st.markdown('<p style="font-family:Space Grotesk,sans-serif;font-weight:700;font-size:0.78rem;color:#6c3de8;text-transform:uppercase;letter-spacing:1.2px;margin:0 0 6px;">📂 Data Source</p>', unsafe_allow_html=True)
     uploaded_file = st.file_uploader(
         "Upload CLOSEPRICES.xlsx", type=['xlsx'],
         help="Upload your CSE close prices file"
     )
 
     st.markdown("---")
-    st.markdown("### ⚙️ Analysis Settings")
+    st.markdown('<p style="font-family:Space Grotesk,sans-serif;font-weight:700;font-size:0.78rem;color:#6c3de8;text-transform:uppercase;letter-spacing:1.2px;margin:0 0 6px;">⚙️ Analysis Settings</p>', unsafe_allow_html=True)
     n_simulations = st.select_slider(
         "Monte Carlo Simulations",
         options=[100, 300, 500, 1000],
@@ -502,11 +644,13 @@ except Exception as e:
 # ─────────────────────────────────────────────────────────────────────────────
 
 st.markdown("""
-<div style="padding: 30px 0 20px;">
+<div style="padding: 24px 0 14px;">
     <div class="main-title">Smart Portfolio Design</div>
-    <div class="main-title" style="color:#2d4a6a;">for Young Sri Lankan Investors</div>
-    <div class="main-subtitle" style="margin-top:8px;">
-        Risk-Boundary Framework · Colombo Stock Exchange · 2020–2024
+    <div class="main-title">for Young Sri Lankan Investors </div>
+    <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+        <span style="background:#ede9fe;color:#6c3de8;padding:4px 13px;border-radius:20px;font-size:0.72rem;font-weight:700;letter-spacing:0.4px;">📐 Risk-Boundary Framework</span>
+        <span style="background:#fce7f3;color:#be185d;padding:4px 13px;border-radius:20px;font-size:0.72rem;font-weight:700;letter-spacing:0.4px;">📈 Colombo Stock Exchange</span>
+        <span style="background:#fef3c7;color:#b45309;padding:4px 13px;border-radius:20px;font-size:0.72rem;font-weight:700;letter-spacing:0.4px;">📅 2020 – 2024</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -547,25 +691,25 @@ with col_a:
     st.markdown(f"""
     <div class="metric-card">
         <div class="metric-label">Investor Profile</div>
-        <div class="metric-value" style="font-size:1.3rem;">{profile_emoji} {profile_name}</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:800;color:#6c3de8;margin-top:4px;">{profile_emoji} {profile_name}</div>
     </div>""", unsafe_allow_html=True)
 with col_b:
     st.markdown(f"""
     <div class="metric-card">
         <div class="metric-label">Investment Horizon</div>
-        <div class="metric-value">{horizon}<span class="metric-unit"> yrs</span></div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:800;color:#18172b;">{horizon}<span style="font-size:0.85rem;color:#9b8cc4;font-weight:400;"> yrs</span></div>
     </div>""", unsafe_allow_html=True)
 with col_c:
     st.markdown(f"""
     <div class="metric-card">
         <div class="metric-label">Capital Available</div>
-        <div class="metric-value" style="font-size:1.3rem;">Rs. {capital:,.0f}</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:800;background:linear-gradient(135deg,#6c3de8,#c4338a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:4px;">Rs. {capital:,.0f}</div>
     </div>""", unsafe_allow_html=True)
 with col_d:
     st.markdown(f"""
     <div class="metric-card">
         <div class="metric-label">Qualified Stocks</div>
-        <div class="metric-value">{len(qualified_stocks)}<span class="metric-unit"> / {len(stock_names)}</span></div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:800;color:#18172b;">{len(qualified_stocks)}<span style="font-size:0.85rem;color:#9b8cc4;font-weight:400;"> / {len(stock_names)}</span></div>
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
@@ -625,7 +769,7 @@ with tab1:
             name='Lower Bound',
             x=methods_df['Method'],
             y=methods_df['Lower Bound (%)'],
-            marker_color='#3498db',
+            marker_color='#6c3de8',
             opacity=0.8,
         ))
         fig.add_trace(go.Bar(
@@ -640,14 +784,14 @@ with tab1:
         fig.add_hline(y=bounds['consensus_upper']*100, line_dash='dot',
                       line_color='#f39c12', annotation_text=f"Consensus Upper: {bounds['consensus_upper']*100:.2f}%")
         fig.update_layout(
-            paper_bgcolor='rgba(245,247,250,0)', plot_bgcolor='#ffffff',
-            font=dict(color='#1a2332', family='Inter'),
+            paper_bgcolor='rgba(240,244,255,0)', plot_bgcolor='#ffffff',
+            font=dict(color='#18172b', family='Plus Jakarta Sans'),
             barmode='group',
-            legend=dict(bgcolor='rgba(255,255,255,0.85)', bordercolor='#dde3ec', borderwidth=1),
+            legend=dict(bgcolor='rgba(255,255,255,0.85)', bordercolor='#e4d9ff', borderwidth=1),
             height=380,
             margin=dict(t=20, b=60),
-            yaxis=dict(title='Volatility (%)', gridcolor='#dde3ec'),
-            xaxis=dict(gridcolor='#dde3ec'),
+            yaxis=dict(title='Volatility (%)', gridcolor='#e4d9ff'),
+            xaxis=dict(gridcolor='#e4d9ff'),
         )
         st.plotly_chart(fig, use_container_width=True)
 
@@ -655,19 +799,19 @@ with tab1:
         st.markdown("**Consensus & Adjusted Boundaries**")
         st.markdown(f"""
         <div class="zone-conservative">
-            <b style="color:#1e8449;">Conservative Zone</b><br>
-            <span style="color:#4a5a6a; font-size:0.88rem;">{bounds['yi_lower']*100:.2f}% — {bounds['zone_conservative_end']*100:.2f}% volatility</span><br>
-            <small style="color:#5a7a99;">For ages 30–35 · Capital preservation</small>
+            <b style="color:#059669;font-family:Space Grotesk,sans-serif;font-weight:700;">🌿 Conservative Zone</b><br>
+            <span style="color:#374151;font-size:0.88rem;font-weight:500;">{bounds['yi_lower']*100:.2f}% — {bounds['zone_conservative_end']*100:.2f}% volatility</span><br>
+            <small style="color:#8878c0;font-weight:500;">For ages 30–35 · Capital preservation</small>
         </div>
         <div class="zone-moderate">
-            <b style="color:#b7770d;">Moderate Zone</b><br>
-            <span style="color:#4a5a6a; font-size:0.88rem;">{bounds['zone_conservative_end']*100:.2f}% — {bounds['zone_moderate_end']*100:.2f}% volatility</span><br>
-            <small style="color:#5a7a99;">For ages 26–30 · Balanced growth</small>
+            <b style="color:#b45309;font-family:Space Grotesk,sans-serif;font-weight:700;">⚡ Moderate Zone</b><br>
+            <span style="color:#374151;font-size:0.88rem;font-weight:500;">{bounds['zone_conservative_end']*100:.2f}% — {bounds['zone_moderate_end']*100:.2f}% volatility</span><br>
+            <small style="color:#8878c0;font-weight:500;">For ages 26–30 · Balanced growth</small>
         </div>
         <div class="zone-aggressive">
-            <b style="color:#c0392b;">Aggressive Zone</b><br>
-            <span style="color:#4a5a6a; font-size:0.88rem;">{bounds['zone_moderate_end']*100:.2f}% — {bounds['adj_upper']*100:.2f}% volatility</span><br>
-            <small style="color:#5a7a99;">For ages 22–25 · Maximum growth</small>
+            <b style="color:#e11d48;font-family:Space Grotesk,sans-serif;font-weight:700;">🔥 Aggressive Zone</b><br>
+            <span style="color:#374151;font-size:0.88rem;font-weight:500;">{bounds['zone_moderate_end']*100:.2f}% — {bounds['adj_upper']*100:.2f}% volatility</span><br>
+            <small style="color:#8878c0;font-weight:500;">For ages 22–25 · Maximum growth</small>
         </div>
         """, unsafe_allow_html=True)
 
@@ -699,10 +843,10 @@ with tab1:
         fig2.add_hline(y=bounds['adj_upper']*100, line_dash='dash', line_color='#e74c3c',
                        annotation_text=f"Upper: {bounds['adj_upper']*100:.2f}%")
         fig2.update_layout(
-            paper_bgcolor='rgba(245,247,250,0)', plot_bgcolor='#ffffff',
-            font=dict(color='#1a2332'), yaxis_title='Annual Volatility (%)',
+            paper_bgcolor='rgba(240,244,255,0)', plot_bgcolor='#ffffff',
+            font=dict(color='#18172b'), yaxis_title='Annual Volatility (%)',
             xaxis_title='Stock', height=350, margin=dict(t=20, b=60),
-            yaxis=dict(gridcolor='#dde3ec'), xaxis=dict(gridcolor='#dde3ec'),
+            yaxis=dict(gridcolor='#e4d9ff'), xaxis=dict(gridcolor='#e4d9ff'),
         )
         st.plotly_chart(fig2, use_container_width=True)
 
@@ -759,14 +903,14 @@ with tab2:
         fig_sc.add_vline(x=bounds['yi_lower']*100, line_dash='dash', line_color='#2ecc71', line_width=1)
         fig_sc.add_vline(x=bounds['adj_upper']*100, line_dash='dash', line_color='#e74c3c', line_width=1)
         fig_sc.add_hline(y=compute_max_affordable_price(capital), line_dash='dash',
-                         line_color='#1a3a5c', line_width=1,
+                         line_color='#6c3de8', line_width=1,
                          annotation_text=f"Max Price: Rs.{compute_max_affordable_price(capital):,.0f}")
         fig_sc.update_layout(
-            paper_bgcolor='rgba(245,247,250,0)', plot_bgcolor='#ffffff',
-            font=dict(color='#1a2332'), height=420,
+            paper_bgcolor='rgba(240,244,255,0)', plot_bgcolor='#ffffff',
+            font=dict(color='#18172b'), height=420,
             xaxis_title='Annual Volatility (%)', yaxis_title='Price (LKR)',
             title='Stock Universe: Risk vs Price',
-            yaxis=dict(gridcolor='#dde3ec'), xaxis=dict(gridcolor='#dde3ec'),
+            yaxis=dict(gridcolor='#e4d9ff'), xaxis=dict(gridcolor='#e4d9ff'),
             margin=dict(t=50, b=60),
         )
         st.plotly_chart(fig_sc, use_container_width=True)
@@ -782,10 +926,10 @@ with tab2:
             marker_colors=[colors_a.get(l, '#888') for l in afford_counts.index],
             hole=0.4,
             textinfo='label+percent',
-            textfont=dict(color='#1a2332', size=11),
+            textfont=dict(color='#18172b', size=11),
         ))
         fig_pie.update_layout(
-            paper_bgcolor='rgba(245,247,250,0)', font=dict(color='#1a2332'),
+            paper_bgcolor='rgba(240,244,255,0)', font=dict(color='#18172b'),
             height=280, margin=dict(t=10, b=10),
             showlegend=False,
         )
@@ -841,7 +985,7 @@ with tab3:
     for i, (pname, pinfo) in enumerate(portfolios.items()):
         p = pinfo['data']
         with cols[i]:
-            highlight = "border: 2px solid #1a3a5c; box-shadow: 0 0 0 3px rgba(26,58,92,0.15);" if pname == recommended_portfolio else ""
+            highlight = "border:2px solid #6c3de8; box-shadow:0 0 0 5px rgba(108,61,232,0.14); background:linear-gradient(135deg,#f6f0ff,#fff0fb);" if pname == recommended_portfolio else ""
             if p:
                 st.markdown(f"""
                 <div class="metric-card" style="{highlight}">
@@ -849,24 +993,24 @@ with tab3:
                     <div style="display:flex; justify-content:space-around; margin-top:10px;">
                         <div>
                             <div class="metric-label">Return</div>
-                            <div style="font-family:'Playfair Display',serif; font-size:1.5rem; color:{pinfo['color']};">
+                            <div style="font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:800;color:{pinfo['color']};">
                                 {p['return']*100:.1f}%
                             </div>
                         </div>
                         <div>
                             <div class="metric-label">Volatility</div>
-                            <div style="font-family:'Playfair Display',serif; font-size:1.5rem; color:{pinfo['color']};">
+                            <div style="font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:800;color:{pinfo['color']};">
                                 {p['volatility']*100:.1f}%
                             </div>
                         </div>
                         <div>
                             <div class="metric-label">Sharpe</div>
-                            <div style="font-family:'Playfair Display',serif; font-size:1.5rem; color:{pinfo['color']};">
+                            <div style="font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:800;color:{pinfo['color']};">
                                 {p['sharpe']:.2f}
                             </div>
                         </div>
                     </div>
-                    {'<div style="text-align:center; color:#1a3a5c; font-size:0.72rem; margin-top:8px; background:#e8f0fa; padding:3px 8px; border-radius:4px;">⭐ Recommended for you</div>' if pname == recommended_portfolio else ''}
+                    {'<div style="text-align:center;margin-top:10px;"><span class="rec-badge">⭐ Recommended for you</span></div>' if pname == recommended_portfolio else ''}
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -890,10 +1034,10 @@ with tab3:
                 ))
                 fig_w.update_layout(
                     title=f"{pinfo['emoji']} {pname}",
-                    paper_bgcolor='rgba(245,247,250,0)', plot_bgcolor='#ffffff',
-                    font=dict(color='#1a2332', size=10), height=300,
+                    paper_bgcolor='rgba(240,244,255,0)', plot_bgcolor='#ffffff',
+                    font=dict(color='#18172b', size=10), height=300,
                     xaxis_title='Weight (%)', margin=dict(t=40, b=40, l=10, r=10),
-                    yaxis=dict(gridcolor='#dde3ec'), xaxis=dict(gridcolor='#dde3ec'),
+                    yaxis=dict(gridcolor='#e4d9ff'), xaxis=dict(gridcolor='#e4d9ff'),
                 )
                 st.plotly_chart(fig_w, use_container_width=True)
 
@@ -936,11 +1080,11 @@ with tab3:
                 name=pname,
             ))
     fig_ef.update_layout(
-        paper_bgcolor='rgba(245,247,250,0)', plot_bgcolor='#ffffff',
-        font=dict(color='#1a2332'), height=420,
+        paper_bgcolor='rgba(240,244,255,0)', plot_bgcolor='#ffffff',
+        font=dict(color='#18172b'), height=420,
         xaxis_title='Volatility (%)', yaxis_title='Expected Return (%)',
-        yaxis=dict(gridcolor='#dde3ec'), xaxis=dict(gridcolor='#dde3ec'),
-        legend=dict(bgcolor='rgba(255,255,255,0.85)', bordercolor='#dde3ec', borderwidth=1),
+        yaxis=dict(gridcolor='#e4d9ff'), xaxis=dict(gridcolor='#e4d9ff'),
+        legend=dict(bgcolor='rgba(255,255,255,0.85)', bordercolor='#e4d9ff', borderwidth=1),
         margin=dict(t=20, b=60),
     )
     st.plotly_chart(fig_ef, use_container_width=True)
@@ -997,16 +1141,16 @@ with tab4:
                     ))
                     fig_mc.add_vline(x=mc['median'], line_dash='dash', line_color='white',
                                      annotation_text=f"Median: Rs.{mc['median']:.2f}")
-                    fig_mc.add_vline(x=1.0, line_dash='dot', line_color='#1a3a5c',
+                    fig_mc.add_vline(x=1.0, line_dash='dot', line_color='#6c3de8',
                                      annotation_text='Break-even')
                     fig_mc.update_layout(
                         title=f"{emoji} {pname}",
-                        paper_bgcolor='rgba(245,247,250,0)', plot_bgcolor='#ffffff',
-                        font=dict(color='#1a2332', size=10), height=300,
+                        paper_bgcolor='rgba(240,244,255,0)', plot_bgcolor='#ffffff',
+                        font=dict(color='#18172b', size=10), height=300,
                         xaxis_title='Final Value (Rs. 1 invested)',
                         yaxis_title='Frequency',
                         margin=dict(t=40, b=40),
-                        yaxis=dict(gridcolor='#dde3ec'), xaxis=dict(gridcolor='#dde3ec'),
+                        yaxis=dict(gridcolor='#e4d9ff'), xaxis=dict(gridcolor='#e4d9ff'),
                     )
                     st.plotly_chart(fig_mc, use_container_width=True)
 
@@ -1022,15 +1166,13 @@ with tab4:
                     proj_worst = capital * mc['p5']
                     proj_best = capital * mc['p95']
                     st.markdown(f"""
-                    <div class="metric-card" style="border-color:{color};">
-                        <div class="metric-label">{emoji} {pname}</div>
-                        <div style="margin-top:8px; text-align:left; font-size:0.85rem;">
-                            <div>📊 <b>Expected:</b> Rs. {proj_mean:,.0f}</div>
-                            <div>📈 <b>Best Case:</b> Rs. {proj_best:,.0f}</div>
-                            <div>📉 <b>Worst Case:</b> Rs. {proj_worst:,.0f}</div>
-                            <div style="color:{color}; margin-top:6px;">
-                                ✅ Positive return: {mc['prob_positive']*100:.0f}% of scenarios
-                            </div>
+                    <div class="metric-card" style="border-top:4px solid {color};">
+                        <div style="font-family:Space Grotesk,sans-serif;font-weight:700;font-size:1rem;color:{color};margin-bottom:10px;">{emoji} {pname}</div>
+                        <div class="proj-row">
+                            <div class="proj-item proj-expected">📊 Expected &nbsp;<b>Rs. {proj_mean:,.0f}</b></div>
+                            <div class="proj-item proj-best">📈 Best Case &nbsp;<b>Rs. {proj_best:,.0f}</b></div>
+                            <div class="proj-item proj-worst">📉 Worst Case &nbsp;<b>Rs. {proj_worst:,.0f}</b></div>
+                            <div class="proj-item proj-prob">✅ Positive return in {mc['prob_positive']*100:.0f}% of scenarios</div>
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
@@ -1108,15 +1250,15 @@ with tab5:
         st.markdown("#### 🎯 Three Investor Profiles")
         st.markdown(f"""
         <div class="zone-aggressive" style="margin-bottom:6px;">
-            <b style="color:#c0392b;">🚀 Ages 22–25 → Aggressive</b><br>
+            <b style="color:#e11d48;font-family:Space Grotesk,sans-serif;font-weight:700;">🚀 Ages 22–25 → Aggressive</b><br>
             <small>Max return portfolio · Accept {bounds['zone_moderate_end']*100:.1f}%–{bounds['adj_upper']*100:.1f}% volatility</small>
         </div>
         <div class="zone-moderate" style="margin-bottom:6px;">
-            <b style="color:#b7770d;">⚖️ Ages 26–30 → Moderate</b><br>
+            <b style="color:#b45309;font-family:Space Grotesk,sans-serif;font-weight:700;">⚖️ Ages 26–30 → Moderate</b><br>
             <small>Max Sharpe ratio · {bounds['zone_conservative_end']*100:.1f}%–{bounds['zone_moderate_end']*100:.1f}% volatility</small>
         </div>
         <div class="zone-conservative">
-            <b style="color:#1e8449;">🛡️ Ages 30–35 → Conservative</b><br>
+            <b style="color:#059669;font-family:Space Grotesk,sans-serif;font-weight:700;">🛡️ Ages 30–35 → Conservative</b><br>
             <small>Min variance · {bounds['yi_lower']*100:.1f}%–{bounds['zone_conservative_end']*100:.1f}% volatility</small>
         </div>
         """, unsafe_allow_html=True)
@@ -1154,8 +1296,6 @@ with tab5:
 
 st.markdown("""
 <hr>
-<div style="text-align:center; color:#5a7a99; font-size:0.78rem; padding:10px 0;">
-    Smart Portfolio Design for Young Sri Lankan Investors · CSE Risk Boundary Framework<br>
-    Built with Streamlit · Data: Colombo Stock Exchange 2020–2024
-</div>
+<div style="text-align:center;padding:14px 0;"><div style="font-family:Space Grotesk,sans-serif;font-weight:800;font-size:0.92rem;background:linear-gradient(135deg,#6c3de8,#c4338a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Smart Portfolio Design · Young CSE Investors 🇱🇰</div><div style="color:#9b8cc4;font-size:0.7rem;margin-top:3px;letter-spacing:0.4px;">Built with Streamlit · Colombo Stock Exchange · 2020–2024</div></div>
 """, unsafe_allow_html=True)
+
