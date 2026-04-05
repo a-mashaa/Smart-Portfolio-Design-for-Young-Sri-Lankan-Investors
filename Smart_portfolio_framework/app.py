@@ -1092,7 +1092,6 @@ with tab2:
     display_df['Qualified'] = display_df['Qualified'].map({True: '✅ Qualified', False: '❌ Excluded'})
     st.dataframe(display_df, use_container_width=True, hide_index=True)
 
-
 # ═════════════════════════════════════════════════════════════════════════════
 # TAB 3: PORTFOLIOS
 # ═════════════════════════════════════════════════════════════════════════════
@@ -1280,7 +1279,7 @@ with tab3:
     layout_ef = _base_layout(
         height=460, margin=dict(t=50, b=70, l=10, r=100),
         title=dict(
-            text='Efficient Frontier',
+            text='Efficient Frontier — 1,000 Random Portfolios + Optimised Strategies',
             font=dict(size=14, color=_FONT_COL, family=_FONT_FAM), x=0.01,
         ),
         xaxis=dict(title='Portfolio Volatility (%)', gridcolor=_GRID),
@@ -1526,4 +1525,5 @@ st.markdown("""
 <hr>
 <div style="text-align:center;padding:14px 0;"><div style="font-family:Space Grotesk,sans-serif;font-weight:800;font-size:0.92rem;background:linear-gradient(135deg,#6c3de8,#c4338a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Smart Portfolio Design · Young CSE Investors 🇱🇰</div><div style="color:#9b8cc4;font-size:0.7rem;margin-top:3px;letter-spacing:0.4px;">Built with Streamlit · Colombo Stock Exchange · 2020–2024</div></div>
 """, unsafe_allow_html=True)
+
 
