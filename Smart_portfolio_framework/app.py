@@ -726,6 +726,51 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "📋 Research Summary"
 ])
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CHART THEME — Youth Palette
+# ─────────────────────────────────────────────────────────────────────────────
+_BG_PAPER   = 'rgba(0,0,0,0)'
+_BG_PLOT    = '#fdfcff'
+_GRID       = '#ede8ff'
+_FONT_COL   = '#18172b'
+_FONT_FAM   = 'Plus Jakarta Sans'
+_PURPLE     = '#6c3de8'
+_PINK       = '#c4338a'
+_AMBER      = '#f59e0b'
+_GREEN      = '#10b981'
+_RED        = '#f43f5e'
+_ORANGE     = '#f97316'
+_TEAL       = '#06b6d4'
+_INDIGO     = '#6366f1'
+
+def _base_layout(**kwargs):
+    """Return a base Plotly layout dict with youth theme applied."""
+    base = dict(
+        paper_bgcolor=_BG_PAPER,
+        plot_bgcolor=_BG_PLOT,
+        font=dict(color=_FONT_COL, family=_FONT_FAM, size=12),
+        margin=dict(t=50, b=60, l=10, r=10),
+        legend=dict(
+            bgcolor='rgba(255,255,255,0.92)',
+            bordercolor=_GRID,
+            borderwidth=1,
+            font=dict(size=11),
+        ),
+        hoverlabel=dict(
+            bgcolor='#1e1b3a',
+            font_color='white',
+            font_family=_FONT_FAM,
+            bordercolor='#6c3de8',
+        ),
+        xaxis=dict(gridcolor=_GRID, linecolor=_GRID, zerolinecolor=_GRID,
+                   tickfont=dict(size=11)),
+        yaxis=dict(gridcolor=_GRID, linecolor=_GRID, zerolinecolor=_GRID,
+                   tickfont=dict(size=11)),
+    )
+    base.update(kwargs)
+    return base
+
 # ═════════════════════════════════════════════════════════════════════════════
 # TAB 1: RISK FRAMEWORK
 # ═════════════════════════════════════════════════════════════════════════════
@@ -763,36 +808,51 @@ with tab1:
     with col1:
         st.markdown("**Seven-Method Comparison**")
 
-        # Plotly grouped bar
+        # Plotly grouped bar — Youth enhanced
         fig = go.Figure()
         fig.add_trace(go.Bar(
             name='Lower Bound',
             x=methods_df['Method'],
             y=methods_df['Lower Bound (%)'],
-            marker_color='#6c3de8',
-            opacity=0.8,
+            marker=dict(
+                color=_PURPLE,
+                opacity=0.88,
+                line=dict(color='white', width=1.5),
+            ),
+            hovertemplate='<b>%{x}</b><br>Lower: %{y:.2f}%<extra></extra>',
         ))
         fig.add_trace(go.Bar(
             name='Upper Bound',
             x=methods_df['Method'],
             y=methods_df['Upper Bound (%)'],
-            marker_color='#e74c3c',
-            opacity=0.8,
+            marker=dict(
+                color=_PINK,
+                opacity=0.88,
+                line=dict(color='white', width=1.5),
+            ),
+            hovertemplate='<b>%{x}</b><br>Upper: %{y:.2f}%<extra></extra>',
         ))
-        fig.add_hline(y=bounds['consensus_lower']*100, line_dash='dot',
-                      line_color='#2ecc71', annotation_text=f"Consensus Lower: {bounds['consensus_lower']*100:.2f}%")
-        fig.add_hline(y=bounds['consensus_upper']*100, line_dash='dot',
-                      line_color='#f39c12', annotation_text=f"Consensus Upper: {bounds['consensus_upper']*100:.2f}%")
-        fig.update_layout(
-            paper_bgcolor='rgba(240,244,255,0)', plot_bgcolor='#ffffff',
-            font=dict(color='#18172b', family='Plus Jakarta Sans'),
-            barmode='group',
-            legend=dict(bgcolor='rgba(255,255,255,0.85)', bordercolor='#e4d9ff', borderwidth=1),
-            height=380,
-            margin=dict(t=20, b=60),
-            yaxis=dict(title='Volatility (%)', gridcolor='#e4d9ff'),
-            xaxis=dict(gridcolor='#e4d9ff'),
+        fig.add_hline(
+            y=bounds['consensus_lower']*100, line_dash='dot', line_color=_GREEN, line_width=2,
+            annotation_text=f"✅ Consensus Lower: {bounds['consensus_lower']*100:.2f}%",
+            annotation_font=dict(color=_GREEN, size=11, family=_FONT_FAM),
         )
+        fig.add_hline(
+            y=bounds['consensus_upper']*100, line_dash='dot', line_color=_AMBER, line_width=2,
+            annotation_text=f"⚡ Consensus Upper: {bounds['consensus_upper']*100:.2f}%",
+            annotation_font=dict(color=_AMBER, size=11, family=_FONT_FAM),
+        )
+        layout_bar = _base_layout(
+            barmode='group', height=400,
+            margin=dict(t=30, b=70, l=10, r=10),
+            yaxis=dict(title='Volatility (%)', gridcolor=_GRID, linecolor=_GRID,
+                       tickfont=dict(size=11), title_font=dict(size=12, color=_FONT_COL)),
+            xaxis=dict(gridcolor=_GRID, linecolor=_GRID, tickfont=dict(size=11),
+                       tickangle=-20),
+            title=dict(text='Seven-Method Volatility Boundary Comparison',
+                       font=dict(size=14, color=_FONT_COL, family=_FONT_FAM), x=0.01),
+        )
+        fig.update_layout(**layout_bar)
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
@@ -834,20 +894,37 @@ with tab1:
         st.markdown("**CSE Stock Volatility Distribution**")
         fig2 = go.Figure()
         sorted_vols = annual_volatility.sort_values()
-        colors_v = ['#2ecc71' if bounds['yi_lower'] <= v <= bounds['adj_upper'] else '#e74c3c'
+        colors_v = [_GREEN if bounds['yi_lower'] <= v <= bounds['adj_upper'] else _RED
                     for v in sorted_vols.values]
-        fig2.add_trace(go.Bar(x=sorted_vols.index, y=sorted_vols.values*100,
-                              marker_color=colors_v, opacity=0.85, name='Volatility'))
-        fig2.add_hline(y=bounds['yi_lower']*100, line_dash='dash', line_color='#2ecc71',
-                       annotation_text=f"Lower: {bounds['yi_lower']*100:.2f}%")
-        fig2.add_hline(y=bounds['adj_upper']*100, line_dash='dash', line_color='#e74c3c',
-                       annotation_text=f"Upper: {bounds['adj_upper']*100:.2f}%")
-        fig2.update_layout(
-            paper_bgcolor='rgba(240,244,255,0)', plot_bgcolor='#ffffff',
-            font=dict(color='#18172b'), yaxis_title='Annual Volatility (%)',
-            xaxis_title='Stock', height=350, margin=dict(t=20, b=60),
-            yaxis=dict(gridcolor='#e4d9ff'), xaxis=dict(gridcolor='#e4d9ff'),
+        # gradient effect: qualified bars get purple tint
+        colors_v2 = [_PURPLE if bounds['yi_lower'] <= v <= bounds['adj_upper'] else _RED
+                     for v in sorted_vols.values]
+        fig2.add_trace(go.Bar(
+            x=sorted_vols.index, y=sorted_vols.values*100,
+            marker=dict(color=colors_v2, opacity=0.85, line=dict(color='white', width=1.2)),
+            name='Volatility',
+            hovertemplate='<b>%{x}</b><br>Volatility: %{y:.2f}%<extra></extra>',
+        ))
+        fig2.add_hrect(
+            y0=bounds['yi_lower']*100, y1=bounds['adj_upper']*100,
+            fillcolor='rgba(108,61,232,0.06)', line_width=0,
+            annotation_text='✅ Target Zone', annotation_position='top right',
+            annotation_font=dict(color=_PURPLE, size=11, family=_FONT_FAM),
         )
+        fig2.add_hline(y=bounds['yi_lower']*100, line_dash='dash', line_color=_GREEN, line_width=2,
+                       annotation_text=f"Lower: {bounds['yi_lower']*100:.2f}%",
+                       annotation_font=dict(color=_GREEN, size=11))
+        fig2.add_hline(y=bounds['adj_upper']*100, line_dash='dash', line_color=_RED, line_width=2,
+                       annotation_text=f"Upper: {bounds['adj_upper']*100:.2f}%",
+                       annotation_font=dict(color=_RED, size=11))
+        layout_vol = _base_layout(
+            height=380, margin=dict(t=40, b=60, l=10, r=10),
+            title=dict(text='CSE Stock Annual Volatility — Boundary Check',
+                       font=dict(size=14, color=_FONT_COL, family=_FONT_FAM), x=0.01),
+            yaxis=dict(title='Annual Volatility (%)', gridcolor=_GRID),
+            xaxis=dict(title='Stock', gridcolor=_GRID),
+        )
+        fig2.update_layout(**layout_vol)
         st.plotly_chart(fig2, use_container_width=True)
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -1025,20 +1102,41 @@ with tab3:
             if p:
                 w_series = pd.Series(p['weights'], index=p['stocks'])
                 w_series = w_series[w_series > 0.01].sort_values(ascending=True)
+                # Build colour gradient: higher weight = more saturated
+                n_bars = len(w_series)
+                bar_colors = [pinfo['color']] * n_bars
                 fig_w = go.Figure(go.Bar(
                     x=w_series.values * 100,
                     y=w_series.index,
                     orientation='h',
-                    marker_color=pinfo['color'],
-                    opacity=0.85,
+                    marker=dict(
+                        color=w_series.values * 100,
+                        colorscale=[
+                            [0.0, 'rgba(108,61,232,0.25)'],
+                            [0.5, pinfo['color']],
+                            [1.0, pinfo['color']],
+                        ],
+                        line=dict(color='white', width=1.5),
+                        opacity=0.9,
+                    ),
+                    text=[f"{v*100:.1f}%" for v in w_series.values],
+                    textposition='outside',
+                    textfont=dict(size=9, color=_FONT_COL, family=_FONT_FAM),
+                    hovertemplate='<b>%{y}</b><br>Weight: %{x:.2f}%<extra></extra>',
                 ))
-                fig_w.update_layout(
-                    title=f"{pinfo['emoji']} {pname}",
-                    paper_bgcolor='rgba(240,244,255,0)', plot_bgcolor='#ffffff',
-                    font=dict(color='#18172b', size=10), height=300,
-                    xaxis_title='Weight (%)', margin=dict(t=40, b=40, l=10, r=10),
-                    yaxis=dict(gridcolor='#e4d9ff'), xaxis=dict(gridcolor='#e4d9ff'),
+                layout_w = _base_layout(
+                    height=320,
+                    margin=dict(t=50, b=40, l=10, r=50),
+                    title=dict(
+                        text=f"{pinfo['emoji']} {pname}",
+                        font=dict(size=13, color=pinfo['color'], family=_FONT_FAM),
+                        x=0.0,
+                    ),
+                    xaxis=dict(title='Weight (%)', gridcolor=_GRID,
+                               range=[0, w_series.max()*130]),
+                    yaxis=dict(gridcolor=_GRID),
                 )
+                fig_w.update_layout(**layout_w)
                 st.plotly_chart(fig_w, use_container_width=True)
 
     # Efficient frontier
@@ -1059,34 +1157,74 @@ with tab3:
         ef_sharpes.append((rr - 0.10)/rv if rv > 0 else 0)
 
     fig_ef = go.Figure()
+    # Background cloud — random portfolios coloured by Sharpe
     fig_ef.add_trace(go.Scatter(
         x=ef_vols, y=ef_rets, mode='markers',
-        marker=dict(color=ef_sharpes, colorscale='RdYlGn', size=4, opacity=0.5,
-                    colorbar=dict(title='Sharpe', thickness=12)),
-        name='Random Portfolios',
-        hovertemplate='Vol: %{x:.2f}%<br>Ret: %{y:.2f}%<extra></extra>',
+        marker=dict(
+            color=ef_sharpes,
+            colorscale=[
+                [0.0,  '#f43f5e'],
+                [0.35, '#f97316'],
+                [0.60, '#f59e0b'],
+                [0.80, '#10b981'],
+                [1.0,  '#6c3de8'],
+            ],
+            size=5,
+            opacity=0.55,
+            colorbar=dict(
+                title=dict(text='Sharpe Ratio', font=dict(size=12, family=_FONT_FAM)),
+                thickness=14, len=0.7,
+                tickfont=dict(size=10, family=_FONT_FAM),
+                outlinewidth=0,
+            ),
+        ),
+        name='Simulated Portfolios',
+        hovertemplate='Volatility: %{x:.2f}%<br>Return: %{y:.2f}%<extra></extra>',
     ))
+    # Optimised portfolio stars with glow rings
     for pname, pinfo in portfolios.items():
         p = pinfo['data']
         if p:
+            # Glow ring
+            fig_ef.add_trace(go.Scatter(
+                x=[p['volatility']*100], y=[p['return']*100],
+                mode='markers',
+                marker=dict(size=32, color=pinfo['color'], opacity=0.15, symbol='circle'),
+                showlegend=False, hoverinfo='skip',
+            ))
+            # Star marker
             fig_ef.add_trace(go.Scatter(
                 x=[p['volatility']*100], y=[p['return']*100],
                 mode='markers+text',
-                marker=dict(size=16, color=pinfo['color'], symbol='star',
-                            line=dict(color='white', width=2)),
+                marker=dict(size=18, color=pinfo['color'], symbol='star',
+                            line=dict(color='white', width=2.5), opacity=1.0),
                 text=[f"{pinfo['emoji']} {pname}"],
                 textposition='top center',
-                textfont=dict(color=pinfo['color'], size=11),
-                name=pname,
+                textfont=dict(color=pinfo['color'], size=12, family=_FONT_FAM),
+                name=f"{pinfo['emoji']} {pname}",
+                hovertemplate=(
+                    f"<b>{pinfo['emoji']} {pname}</b><br>"
+                    f"Return: {p['return']*100:.1f}%<br>"
+                    f"Volatility: {p['volatility']*100:.1f}%<br>"
+                    f"Sharpe: {p['sharpe']:.2f}"
+                    "<extra></extra>"
+                ),
             ))
-    fig_ef.update_layout(
-        paper_bgcolor='rgba(240,244,255,0)', plot_bgcolor='#ffffff',
-        font=dict(color='#18172b'), height=420,
-        xaxis_title='Volatility (%)', yaxis_title='Expected Return (%)',
-        yaxis=dict(gridcolor='#e4d9ff'), xaxis=dict(gridcolor='#e4d9ff'),
-        legend=dict(bgcolor='rgba(255,255,255,0.85)', bordercolor='#e4d9ff', borderwidth=1),
-        margin=dict(t=20, b=60),
+    layout_ef = _base_layout(
+        height=460, margin=dict(t=50, b=70, l=10, r=100),
+        title=dict(
+            text='Efficient Frontier',
+            font=dict(size=14, color=_FONT_COL, family=_FONT_FAM), x=0.01,
+        ),
+        xaxis=dict(title='Portfolio Volatility (%)', gridcolor=_GRID),
+        yaxis=dict(title='Expected Annual Return (%)', gridcolor=_GRID),
+        legend=dict(
+            x=1.08, y=0.9, bgcolor='rgba(255,255,255,0.95)',
+            bordercolor=_GRID, borderwidth=1,
+            font=dict(size=11, family=_FONT_FAM),
+        ),
     )
+    fig_ef.update_layout(**layout_ef)
     st.plotly_chart(fig_ef, use_container_width=True)
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -1135,23 +1273,46 @@ with tab4:
             with col:
                 if mc:
                     fig_mc = go.Figure()
+                    # Positive / negative split coloring
                     fig_mc.add_trace(go.Histogram(
-                        x=mc['vals'], nbinsx=30,
-                        marker_color=color, opacity=0.75, name='Scenarios',
+                        x=mc['vals'], nbinsx=35,
+                        marker=dict(
+                            color=color,
+                            opacity=0.82,
+                            line=dict(color='white', width=0.8),
+                        ),
+                        name='Scenarios',
+                        hovertemplate='Value: Rs.%{x:.2f}<br>Count: %{y}<extra></extra>',
                     ))
-                    fig_mc.add_vline(x=mc['median'], line_dash='dash', line_color='white',
-                                     annotation_text=f"Median: Rs.{mc['median']:.2f}")
-                    fig_mc.add_vline(x=1.0, line_dash='dot', line_color='#6c3de8',
-                                     annotation_text='Break-even')
-                    fig_mc.update_layout(
-                        title=f"{emoji} {pname}",
-                        paper_bgcolor='rgba(240,244,255,0)', plot_bgcolor='#ffffff',
-                        font=dict(color='#18172b', size=10), height=300,
-                        xaxis_title='Final Value (Rs. 1 invested)',
-                        yaxis_title='Frequency',
-                        margin=dict(t=40, b=40),
-                        yaxis=dict(gridcolor='#e4d9ff'), xaxis=dict(gridcolor='#e4d9ff'),
+                    # Break-even line
+                    fig_mc.add_vline(
+                        x=1.0, line_dash='dot', line_color=_PURPLE, line_width=2,
+                        annotation_text='Break-even',
+                        annotation_font=dict(color=_PURPLE, size=10, family=_FONT_FAM),
+                        annotation_position='top left',
                     )
+                    # Median line
+                    fig_mc.add_vline(
+                        x=mc['median'], line_dash='dash', line_color=_FONT_COL, line_width=2,
+                        annotation_text=f"Median: Rs.{mc['median']:.2f}",
+                        annotation_font=dict(color=_FONT_COL, size=10, family=_FONT_FAM),
+                        annotation_position='top right',
+                    )
+                    # Shading: loss region
+                    fig_mc.add_vrect(
+                        x0=min(mc['vals']), x1=1.0,
+                        fillcolor='rgba(244,63,94,0.06)', line_width=0,
+                    )
+                    layout_mc = _base_layout(
+                        height=320, margin=dict(t=48, b=50, l=10, r=10),
+                        title=dict(
+                            text=f"{emoji} {pname}",
+                            font=dict(size=13, color=color, family=_FONT_FAM), x=0.0,
+                        ),
+                        xaxis=dict(title='Final Value (Rs. 1 invested)', gridcolor=_GRID),
+                        yaxis=dict(title='Frequency', gridcolor=_GRID),
+                    )
+                    fig_mc.update_layout(**layout_mc)
                     st.plotly_chart(fig_mc, use_container_width=True)
 
         # Capital projection
